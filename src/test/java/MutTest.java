@@ -73,35 +73,22 @@ public class MutTest {
 					return -1;
 				}
 			}
-			if (size == 1) {
-				if ((x[0] % hit[0]) == 0) {
-					return x[0] / hit[0];
-				} else {
-					return (x[0] / hit[0]) + 1;
-				}
-			} else if (size == 2) {
-				int count = 0;
-				while (true) {
-					selectionSort(x);
-					if (x[0] - hit[0] <= 0 && x[1] - hit[1] <= 0) {
-						return count + 1;
+
+			int count = 0;
+			int loop_count = 0;
+			while (count < size) {
+				selectionSort(x);
+				for (int i = 0; i < size; i++) {
+					if (x[i] > 0) {
+						x[i] -= hit[i];
+						if (x[i] <= 0) {
+							count++;
+						}
 					}
-					x[0] = x[0] - hit[0];
-					x[1] = x[1] - hit[1];
-					count++;
 				}
-			} else if (size == 3) {
-				int count = 0;
-				while (true) {
-					selectionSort(x);
-					x[0] = x[0] - hit[0];
-					x[1] = x[1] - hit[1];
-					x[2] = x[2] - hit[2];
-					count++;
-					break;
-				}
+				loop_count++;
 			}
-			return -1;
+			return loop_count;
 		}
 
 		public void selectionSort(int[] list) {
