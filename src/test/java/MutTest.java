@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,7 +61,8 @@ public class MutTest {
 
 	public class MutaliskEasy {
 
-		int[] hit = { 9, 3, 1 };
+		String[] hit = { "9", "3", "1" };
+		String[][] list = new String[6][3];
 
 		public int minimalAttacks(int[] x) {
 			int size = x.length;
@@ -73,22 +77,46 @@ public class MutTest {
 					return -1;
 				}
 			}
-
-			int count = 0;
 			int loop_count = 0;
-			while (count < size) {
-				selectionSort(x);
-				for (int i = 0; i < size; i++) {
-					if (x[i] > 0) {
-						x[i] -= hit[i];
-						if (x[i] <= 0) {
-							count++;
+			List<String> permutation = generatePermutations(hit);
+			while (true) {
+				// 비교
+				// 순열로 차감 -> 정렬 -> 비교
+				for (int i = 0; i < permutation.size(); i++) {
+					int next_dead_count = 0;
+					int dead_count = 0;
+					int[] tmp = new int[size];
+					// 차감
+					for (int j = 0; j < size; j++) {
+						tmp[j] = x[j] - Character.getNumericValue(permutation.get(i).charAt(j));
+					}
+					// 정렬
+					selectionSort(tmp);
+					// 비교
+					for (int j = 0; j < size; j++) {
+						if (Integer.parseInt(hit[j]) >= tmp[j]) {
+							next_dead_count++;
+						}
+						if (tmp[j] <= 0) {
+							dead_count++;
 						}
 					}
+					if (dead_count == size) {
+						return loop_count + 1;
+					} else if (next_dead_count == size) {
+						return loop_count + 2;
+					}
+				}
+				// 정렬
+				selectionSort(x);
+
+				// 차감
+				for (int j = 0; j < size; j++) {
+					x[j] = x[j] - Integer.parseInt(hit[j]);
+					System.out.print(x[j] + " ");
 				}
 				loop_count++;
 			}
-			return loop_count;
 		}
 
 		public void selectionSort(int[] list) {
@@ -105,6 +133,33 @@ public class MutTest {
 				list[indexMin] = list[i];
 				list[i] = temp;
 			}
+		}
+
+		private List<String> generatePermutations(String[] elements) {
+			List<String> permutations = new ArrayList<String>();
+			if (elements.length == 2) {
+				String x1 = elements[0] + elements[1];
+				String x2 = elements[1] + elements[0];
+				permutations.add(x1);
+				permutations.add(x2);
+			} else {
+				for (int i = 0; i < elements.length; i++) {
+					String[] elements2 = new String[elements.length - 1];
+					int kalo = 0;
+					for (int j = 0; j < elements2.length; j++) {
+						if (i == j) {
+							kalo = 1;
+						}
+						elements2[j] = elements[j + kalo];
+					}
+					List<String> k2 = generatePermutations(elements2);
+					for (String x : k2) {
+						String s = elements[i] + x;
+						permutations.add(s);
+					}
+				}
+			}
+			return permutations;
 		}
 	}
 }
